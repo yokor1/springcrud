@@ -30,7 +30,25 @@ public class UserController {
 
     @PostMapping(value = "")
     public ResponseEntity<CrmUser> create(@RequestBody CrmUser crmUser) {
-        return ResponseEntity.created(URI.create("/users"))
-                .body(userService.create(crmUser));
+        CrmUser createdUser = userService.create(crmUser);
+        return ResponseEntity.created(URI.create("/users/" + createdUser.getUserId()))
+                .body(createdUser);
+    }
+
+    @GetMapping(value = "/{user-id}")
+    public ResponseEntity<CrmUser> findById(@PathVariable("user-id") String userId) {
+        return ResponseEntity.ok(userService.findById(userId));
+    }
+
+    @DeleteMapping(value = "/{user-id}")
+    public ResponseEntity<Void> delete(@PathVariable("user-id") String userId) {
+        userService.delete(userId);
+        return ResponseEntity.ok().build();
+    }
+
+    @PutMapping(value = "/{user-id}")
+    public ResponseEntity<CrmUser> update(
+            @PathVariable("user-id") String userId, @RequestBody CrmUser user) {
+        return ResponseEntity.ok(userService.update(userId, user));
     }
 }
