@@ -1,0 +1,2 @@
+DROP TABLE IF EXISTS users;
+CREATE TABLE users(id userId PRIMARY KEY, name VARCHAR(100));
