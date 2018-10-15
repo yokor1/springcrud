@@ -21,6 +21,10 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest
 public class HeartbeatControllerITest {
 
+    private final String a_token = "a_token";
+    private final long a_timestamp = 100;
+    private final Heartbeat a_heartbeat = new Heartbeat(a_token, a_timestamp);
+
     @MockBean
     HeartbeatService heartbeatService;
 
@@ -35,7 +39,7 @@ public class HeartbeatControllerITest {
                 .standaloneSetup(heartbeatController)
                 .build();
 
-        //heartbeatController = new HeartbeatController()
+        willReturn(a_heartbeat).given(heartbeatService).beat(a_token);
     }
 
     @Test
@@ -43,14 +47,10 @@ public class HeartbeatControllerITest {
         assertNotNull(heartbeatController);
     }
 
+
     @Test
     public void givenAToken_whenBeatIsRequestedWithThisToken_thenABeatIsReturnedWithThisToken()
             throws Exception {
-        final String a_token = "a_token";
-        final long a_timestamp = 100;
-        final Heartbeat a_heartbeat = new Heartbeat(a_token, a_timestamp);
-
-        willReturn(a_heartbeat).given(heartbeatService).beat(a_token);
 
         mockMvc.perform(
                 get("/beat")
@@ -62,11 +62,6 @@ public class HeartbeatControllerITest {
     @Test
     public void whenBeatIsRequested_thenABeatIsReturnedWithTimestamp()
             throws Exception {
-        final String a_token = "a_token";
-        final long a_timestamp = 100;
-        final Heartbeat a_heartbeat = new Heartbeat(a_token, a_timestamp);
-
-        willReturn(a_heartbeat).given(heartbeatService).beat(a_token);
 
         mockMvc.perform(
                 get("/beat")
@@ -78,7 +73,6 @@ public class HeartbeatControllerITest {
     @Test
     public void whenBeatIsRequested_thenABeatIsReturnedWithStatusOk()
             throws Exception {
-        final String a_token = "a_token";
 
         mockMvc.perform(
                 get("/beat")
@@ -90,11 +84,6 @@ public class HeartbeatControllerITest {
     @Test
     public void whenBeatIsRequested_thenABeatIsReturnedWithJsonApplicationMediaType()
             throws Exception {
-        final String a_token = "a_token";
-        final long a_timestamp = 100;
-        final Heartbeat a_heartbeat = new Heartbeat(a_token, a_timestamp);
-
-        willReturn(a_heartbeat).given(heartbeatService).beat(a_token);
 
         mockMvc.perform(
                 get("/beat")
