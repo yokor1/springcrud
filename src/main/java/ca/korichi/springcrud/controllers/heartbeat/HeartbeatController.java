@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
         produces = MediaType.APPLICATION_JSON_UTF8_VALUE
 )
 public class HeartbeatController {
-    private final HeartbeatService heartbeatService;
+    private HeartbeatService heartbeatService;
 
     public HeartbeatController(HeartbeatService heartbeatService) {
         this.heartbeatService = heartbeatService;
