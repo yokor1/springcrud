@@ -5,7 +5,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.Instant;
 
-@Service
+@Service(value = "HeartbeatService")
 public class CrudHeartbeatService implements HeartbeatService {
     @Override
     public Heartbeat beat(String token) {

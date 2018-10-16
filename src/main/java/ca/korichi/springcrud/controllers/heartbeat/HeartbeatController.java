@@ -1,6 +1,7 @@
 package ca.korichi.springcrud.controllers.heartbeat;
 
 import ca.korichi.springcrud.services.heartbeat.HeartbeatService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.repository.query.Param;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -17,13 +18,16 @@ import org.springframework.web.bind.annotation.RestController;
 public class HeartbeatController {
     private HeartbeatService heartbeatService;
 
+    @Autowired
     public HeartbeatController(HeartbeatService heartbeatService) {
         this.heartbeatService = heartbeatService;
     }
 
     @GetMapping(value = "beat")
     public ResponseEntity<Heartbeat> beat(@Param("token") String token) {
-        return ResponseEntity.ok(heartbeatService.beat(token));
+        return ResponseEntity.ok(
+                heartbeatService
+                        .beat(token));
     }
 
 }
