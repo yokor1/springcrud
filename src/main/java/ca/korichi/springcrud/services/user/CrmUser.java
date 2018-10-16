@@ -16,6 +16,7 @@ import javax.persistence.Table;
 @Entity
 @Table(name = "users")
 public class CrmUser {
+
     @Id
     @GeneratedValue(generator = "system-uuid")
     @GenericGenerator(name = "system-uuid", strategy = "uuid2")
