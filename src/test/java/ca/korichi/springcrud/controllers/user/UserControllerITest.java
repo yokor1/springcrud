@@ -19,11 +19,12 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import static org.hamcrest.Matchers.hasSize;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.BDDMockito.willReturn;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(classes = SpringcrudApplication.class)
@@ -57,7 +58,6 @@ class UserControllerITest {
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8));
     }
 
-
     @Test
     public void whenUsersAreRequested_thenAStatusOkIsReturned() throws Exception {
         willReturn(new ArrayList<>()).given(userService).findAll();
@@ -67,12 +67,27 @@ class UserControllerITest {
     }
 
     @Test
-    public void whenUsersAreRequested_thenTheListOfUsersIsReturned() throws Exception {
+    public void whenUsersAreRequested_thenAListOfTheRightSizeIsReturned() throws Exception {
         List<CrmUser> users = getUserList();
         willReturn(users).given(userService).findAll();
         mockMvc.perform(
                 get("/users").contentType(MediaType.APPLICATION_JSON_UTF8))
-                .andExpect(status().isOk());
+                .andExpect(jsonPath("$", hasSize(2)));
+    }
+
+    @Test
+    public void whenUserIsRequestedById_thenTheUserIsReturned() throws Exception {
+        String id = "id";
+        String name = "name";
+        CrmUser user = new CrmUser(id, name);
+        willReturn(user).given(userService).findById(id);
+
+        mockMvc.perform(
+                get(String.format("/users/%s", id))
+                        .contentType(MediaType.APPLICATION_JSON_UTF8))
+                .andDo(print())
+                .andExpect(jsonPath("$.userId").value(id))
+                .andExpect(jsonPath("$.name").value(name));
     }
 
     private List<CrmUser> getUserList() {
