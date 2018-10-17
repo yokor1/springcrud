@@ -32,7 +32,6 @@ public class UserController {
     @ApiOperation(value = "Find users", notes = "Find all users")
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Users list"),
-            //@ApiResponse(code = 404,message = "Category not found"),
     })
     public ResponseEntity<List<CrmUser>> findAll() {
         return ResponseEntity.ok(userService.findAll());
