@@ -1,5 +1,6 @@
 package ca.korichi.springcrud.services.user;
 
+import ca.korichi.springcrud.repositories.UserRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 

@@ -2,6 +2,10 @@ package ca.korichi.springcrud.controllers.user;
 
 import ca.korichi.springcrud.services.user.CrmUser;
 import ca.korichi.springcrud.services.user.UserService;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiResponse;
+import io.swagger.annotations.ApiResponses;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -15,6 +19,7 @@ import java.util.List;
         consumes = MediaType.APPLICATION_JSON_UTF8_VALUE,
         produces = MediaType.APPLICATION_JSON_UTF8_VALUE
 )
+@Api(tags = "users", description = "Users API")
 public class UserController {
 
     private final UserService userService;
@@ -24,6 +29,10 @@ public class UserController {
     }
 
     @GetMapping(value = "")
+    @ApiOperation(value = "Find users", notes = "Find all users")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Users list"),
+    })
     public ResponseEntity<List<CrmUser>> findAll() {
         return ResponseEntity.ok(userService.findAll());
     }
@@ -36,6 +45,11 @@ public class UserController {
     }
 
     @GetMapping(value = "/{user-id}")
+    @ApiOperation(value = "Find a user", notes = "Find user by ID")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "User"),
+            @ApiResponse(code = 404, message = "user not found"),
+    })
     public ResponseEntity<CrmUser> findById(@PathVariable("user-id") String userId) {
         return ResponseEntity.ok(userService.findById(userId));
     }
