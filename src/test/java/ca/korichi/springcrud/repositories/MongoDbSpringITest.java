@@ -26,7 +26,8 @@ class MongoDbSpringITest {
 
         mongoTemplate.save(objectToSave, "collection");
 
-        assertThat(mongoTemplate.findAll(DBObject.class, "collection")).extracting("key")
+        assertThat(mongoTemplate.findAll(DBObject.class, "collection"))
+                .extracting("key")
                 .containsOnly("value");
     }
 }
