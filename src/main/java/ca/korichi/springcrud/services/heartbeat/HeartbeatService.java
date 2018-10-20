@@ -1,7 +1,8 @@
 package ca.korichi.springcrud.services.heartbeat;
 
 import ca.korichi.springcrud.controllers.heartbeat.Heartbeat;
+import reactor.core.publisher.Mono;
 
 public interface HeartbeatService {
-    Heartbeat beat(String token);
+    Mono<Heartbeat> beat(String token);
 }

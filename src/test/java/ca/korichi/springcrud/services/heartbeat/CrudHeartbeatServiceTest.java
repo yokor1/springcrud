@@ -1,5 +1,6 @@
 package ca.korichi.springcrud.services.heartbeat;
 
+import ca.korichi.springcrud.controllers.heartbeat.Heartbeat;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -21,7 +22,9 @@ class CrudHeartbeatServiceTest {
     public void test() {
 
         final String a_token = "a_token";
-        assertEquals(a_token, crudHeartbeatService.beat(a_token).getToken());
+        crudHeartbeatService.beat(a_token)
+                .map(Heartbeat::getToken)
+                .subscribe(token -> assertEquals(a_token, token));
     }
 
 }
