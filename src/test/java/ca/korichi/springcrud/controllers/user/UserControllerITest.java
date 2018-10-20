@@ -1,48 +1,35 @@
 package ca.korichi.springcrud.controllers.user;
 
-import ca.korichi.springcrud.SpringcrudApplication;
 import ca.korichi.springcrud.services.user.CrmUser;
 import ca.korichi.springcrud.services.user.UserService;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.autoconfigure.web.reactive.WebFluxTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
-import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.test.web.reactive.server.WebTestClient;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import static org.hamcrest.Matchers.hasSize;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.BDDMockito.willReturn;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @ExtendWith(SpringExtension.class)
-@ContextConfiguration(classes = SpringcrudApplication.class)
-@WebMvcTest(controllers = UserController.class)
+@WebFluxTest(controllers = UserController.class)
 class UserControllerITest {
 
-    private MockMvc mockMvc;
     @Autowired
     private UserController userController;
     @MockBean
     private UserService userService;
-
-    @BeforeEach
-    public void setup() {
-        mockMvc = MockMvcBuilders
-                .standaloneSetup(userController)
-                .build();
-    }
+    @Autowired
+    private WebTestClient webClient;
 
     @Test
     public void contextLoads() {
@@ -50,29 +37,28 @@ class UserControllerITest {
     }
 
     @Test
-    public void whenBeatIsRequested_thenABeatIsReturnedWithJsonApplicationMediaType()
-            throws Exception {
-        willReturn(new ArrayList<>()).given(userService).findAll();
-        mockMvc.perform(
-                get("/users").contentType(MediaType.APPLICATION_JSON_UTF8))
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8));
+    public void whenBeatIsRequested_thenABeatIsReturnedWithJsonApplicationMediaType() {
+        willReturn(Flux.empty()).given(userService).findAll();
+        webClient.get().uri("/users")
+                .exchange()
+                .expectHeader().contentType(MediaType.APPLICATION_JSON_UTF8);
     }
 
     @Test
-    public void whenUsersAreRequested_thenAStatusOkIsReturned() throws Exception {
-        willReturn(new ArrayList<>()).given(userService).findAll();
-        mockMvc.perform(
-                get("/users").contentType(MediaType.APPLICATION_JSON_UTF8))
-                .andExpect(status().isOk());
+    public void whenUsersAreRequested_thenAStatusOkIsReturned() {
+        willReturn(Flux.empty()).given(userService).findAll();
+        webClient.get().uri("/users")
+                .exchange().expectStatus().isOk();
     }
 
     @Test
-    public void whenUsersAreRequested_thenAListOfTheRightSizeIsReturned() throws Exception {
+    public void whenUsersAreRequested_thenAListOfTheRightSizeIsReturned() {
         List<CrmUser> users = getUserList();
-        willReturn(users).given(userService).findAll();
-        mockMvc.perform(
-                get("/users").contentType(MediaType.APPLICATION_JSON_UTF8))
-                .andExpect(jsonPath("$", hasSize(2)));
+        willReturn(Flux.fromIterable(users)).given(userService).findAll();
+        webClient.get().uri("/users")
+                .exchange()
+                .expectBodyList(CrmUser.class)
+                .hasSize(2);
     }
 
     @Test
@@ -80,14 +66,12 @@ class UserControllerITest {
         String id = "id";
         String name = "name";
         CrmUser user = new CrmUser(id, name);
-        willReturn(user).given(userService).findById(id);
+        willReturn(Mono.just(user)).given(userService).findById(id);
 
-        mockMvc.perform(
-                get(String.format("/users/%s", id))
-                        .contentType(MediaType.APPLICATION_JSON_UTF8))
-                .andDo(print())
-                .andExpect(jsonPath("$.userId").value(id))
-                .andExpect(jsonPath("$.name").value(name));
+        webClient.get().uri("/users/{userid}", id)
+                .exchange()
+                .expectBody(CrmUser.class)
+                .isEqualTo(user);
     }
 
     private List<CrmUser> getUserList() {
