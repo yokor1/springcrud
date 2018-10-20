@@ -1,15 +1,16 @@
 package ca.korichi.springcrud.services.user;
 
-import java.util.List;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
 public interface UserService {
-    List<CrmUser> findAll();
+    Flux<CrmUser> findAll();
 
-    CrmUser create(CrmUser crmUser);
+    Mono<CrmUser> create(CrmUser crmUser);
 
-    CrmUser findById(String userId);
+    Mono<CrmUser> findById(String userId);
 
     void delete(String userId);
 
-    CrmUser update(String userId, CrmUser user);
+    Mono<CrmUser> update(String userId, CrmUser user);
 }
